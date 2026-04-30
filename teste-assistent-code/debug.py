@@ -12,18 +12,23 @@ qtd3 = int(input("Quantidade do item 3: "))
 item3 = float(input("Preço do item 3? "))
 
 # CÁLCULOS DOS ITENS
+# Multiplica quantidade pelo preço para obter o valor de cada linha
 total_item1 = qtd1 * item1
 total_item2 = qtd2 * item2
 total_item3 = qtd3 * item3
 
+# Soma os totais parciais antes de aplicar imposto e desconto
 subtotal = total_item1 + total_item2 + total_item3
+# Imposto fixo de 10% sobre o subtotal
 imposto = subtotal * 0.10
 
 # DESCONTO
+# Entrada do usuário representa percentual; converte para valor monetário
 desconto_cupom = float(input("Você tem um cupom de desconto? (Digite o percentual ou 0): "))
 desconto = subtotal * (desconto_cupom / 100)
 
 # TOTAL FINAL
+# Aplica o imposto sobre o subtotal e depois subtrai o desconto
 total = subtotal + imposto - desconto
 
 # EXIBIÇÃO

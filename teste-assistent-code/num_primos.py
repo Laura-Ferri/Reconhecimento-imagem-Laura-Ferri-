@@ -2,19 +2,18 @@ import math
 from typing import Union
 
 def is_prime(n: int) -> bool:
-    """
-    Verifica se um número inteiro é primo.
+    """Verifica se um número inteiro é primo.
 
     Um número primo é um inteiro maior que 1 que possui apenas dois divisores positivos: 1 e ele mesmo.
 
     Args:
-        n (int): O número a ser verificado. Deve ser um inteiro não negativo.
+        n (int): O número a ser verificado.
 
     Returns:
         bool: True se o número for primo, False caso contrário.
 
     Raises:
-        TypeError: Se n não for um inteiro.
+        TypeError: Se ``n`` não for um inteiro.
     """
     if not isinstance(n, int):
         raise TypeError("O argumento deve ser um inteiro.")
