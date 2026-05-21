@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="To-Do App - Organize suas tarefas com estilo. Crie, gerencie e conclua tarefas por categoria." />
+  <title>To-Do App</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    * { font-family: 'Inter', sans-serif; }
+
+    body {
+      background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+      min-height: 100vh;
+    }
+
+    .glass {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .glass-input {
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #e2e8f0;
+      transition: all 0.2s ease;
+    }
+
+    .glass-input:focus {
+      outline: none;
+      border-color: rgba(139, 92, 246, 0.7);
+      background: rgba(255, 255, 255, 0.1);
+      box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
+    }
+
+    .glass-input::placeholder { color: rgba(203, 213, 225, 0.4); }
+
+    .glass-input option {
+      background: #1e1b4b;
+      color: #e2e8f0;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #7c3aed, #4f46e5);
+      transition: all 0.25s ease;
+      box-shadow: 0 4px 15px rgba(124, 58, 237, 0.35);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(124, 58, 237, 0.5);
+      filter: brightness(1.1);
+    }
+
+    .btn-primary:active { transform: translateY(0); }
+
+    .btn-logout {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #fca5a5;
+      transition: all 0.25s ease;
+    }
+
+    .btn-logout:hover {
+      background: rgba(239, 68, 68, 0.3);
+      border-color: rgba(239, 68, 68, 0.6);
+      transform: translateY(-1px);
+    }
+
+    .btn-conclude {
+      background: rgba(34, 197, 94, 0.15);
+      border: 1px solid rgba(34, 197, 94, 0.3);
+      color: #86efac;
+      transition: all 0.25s ease;
+      font-size: 0.75rem;
+      padding: 4px 12px;
+      border-radius: 6px;
+    }
+
+    .btn-conclude:hover {
+      background: rgba(34, 197, 94, 0.3);
+      border-color: rgba(34, 197, 94, 0.6);
+    }
+
+    .btn-delete {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.25);
+      color: #fca5a5;
+      transition: all 0.25s ease;
+      font-size: 0.75rem;
+      padding: 4px 10px;
+      border-radius: 6px;
+    }
+
+    .btn-delete:hover {
+      background: rgba(239, 68, 68, 0.3);
+    }
+
+    .task-card {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      padding: 16px;
+      transition: all 0.25s ease;
+      animation: slideIn 0.3s ease;
+    }
+
+    .task-card:hover {
+      background: rgba(255, 255, 255, 0.07);
+      border-color: rgba(255, 255, 255, 0.15);
+      transform: translateY(-2px);
+    }
+
+    .task-card.done {
+      opacity: 0.45;
+      filter: grayscale(0.4);
+    }
+
+    .task-card.done .task-title {
+      text-decoration: line-through;
+      color: rgba(203, 213, 225, 0.5);
+    }
+
+    .badge-trabalho {
+      background: rgba(59, 130, 246, 0.2);
+      border: 1px solid rgba(59, 130, 246, 0.4);
+      color: #93c5fd;
+    }
+
+    .badge-pessoal {
+      background: rgba(139, 92, 246, 0.2);
+      border: 1px solid rgba(139, 92, 246, 0.4);
+      color: #c4b5fd;
+    }
+
+    .badge-estudos {
+      background: rgba(34, 197, 94, 0.2);
+      border: 1px solid rgba(34, 197, 94, 0.4);
+      color: #86efac;
+    }
+
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    .tab-btn {
+      transition: all 0.2s ease;
+      border-bottom: 2px solid transparent;
+    }
+
+    .tab-btn.active-tab {
+      border-bottom-color: #7c3aed;
+      color: #c4b5fd;
+    }
+
+    .alert-msg {
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      margin-top: 10px;
+      display: none;
+    }
+
+    .alert-error {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.35);
+      color: #fca5a5;
+    }
+
+    .alert-success {
+      background: rgba(34, 197, 94, 0.15);
+      border: 1px solid rgba(34, 197, 94, 0.35);
+      color: #86efac;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .fade-in { animation: fadeIn 0.4s ease; }
+
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(139, 92, 246, 0.4); border-radius: 10px; }
+  </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+
+  <!-- AUTH SCREEN -->
+  <div id="screen-auth" class="screen active w-full max-w-md fade-in">
+    <div class="glass rounded-2xl p-8 shadow-2xl">
+
+      <div class="text-center mb-8">
+        <div class="w-14 h-14 rounded-2xl btn-primary flex items-center justify-center mx-auto mb-4">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+          </svg>
+        </div>
+        <h1 class="text-2xl font-bold text-white">To-Do App</h1>
+        <p class="text-slate-400 text-sm mt-1">Organize suas tarefas com estilo</p>
+      </div>
+
+      <!-- TABS -->
+      <div class="flex mb-6 border-b border-white/10">
+        <button id="tab-login" class="tab-btn active-tab flex-1 py-2 text-sm font-medium text-slate-300" onclick="switchTab('login')">Entrar</button>
+        <button id="tab-register" class="tab-btn flex-1 py-2 text-sm font-medium text-slate-400" onclick="switchTab('register')">Criar conta</button>
+      </div>
+
+      <!-- LOGIN FORM -->
+      <form id="form-login" class="space-y-4" onsubmit="handleLogin(event)">
+        <div>
+          <label class="text-slate-300 text-sm font-medium block mb-1">E-mail</label>
+          <input id="login-email" type="email" placeholder="seu@email.com" required
+            class="glass-input w-full rounded-xl px-4 py-3 text-sm" />
+        </div>
+        <div>
+          <label class="text-slate-300 text-sm font-medium block mb-1">Senha</label>
+          <input id="login-password" type="password" placeholder="••••••••" required
+            class="glass-input w-full rounded-xl px-4 py-3 text-sm" />
+        </div>
+        <div id="login-alert" class="alert-msg alert-error"></div>
+        <button type="submit" id="btn-login"
+          class="btn-primary w-full py-3 rounded-xl text-white text-sm font-semibold mt-2">
+          Entrar
+        </button>
+      </form>
+
+      <!-- REGISTER FORM -->
+      <form id="form-register" class="space-y-4 hidden" onsubmit="handleRegister(event)">
+        <div>
+          <label class="text-slate-300 text-sm font-medium block mb-1">Nome</label>
+          <input id="register-name" type="text" placeholder="Seu nome" required
+            class="glass-input w-full rounded-xl px-4 py-3 text-sm" />
+        </div>
+        <div>
+          <label class="text-slate-300 text-sm font-medium block mb-1">E-mail</label>
+          <input id="register-email" type="email" placeholder="seu@email.com" required
+            class="glass-input w-full rounded-xl px-4 py-3 text-sm" />
+        </div>
+        <div>
+          <label class="text-slate-300 text-sm font-medium block mb-1">Senha</label>
+          <input id="register-password" type="password" placeholder="Mínimo 6 caracteres" required minlength="6"
+            class="glass-input w-full rounded-xl px-4 py-3 text-sm" />
+        </div>
+        <div id="register-alert" class="alert-msg alert-error"></div>
+        <button type="submit" id="btn-register"
+          class="btn-primary w-full py-3 rounded-xl text-white text-sm font-semibold mt-2">
+          Criar conta
+        </button>
+      </form>
+
+    </div>
+  </div>
+
+  <!-- DASHBOARD SCREEN -->
+  <div id="screen-dashboard" class="screen w-full max-w-2xl fade-in">
+
+    <!-- HEADER -->
+    <div class="glass rounded-2xl px-6 py-4 mb-5 flex items-center justify-between shadow-lg">
+      <div>
+        <p class="text-slate-400 text-xs font-medium uppercase tracking-wider">Bem-vindo de volta</p>
+        <h2 id="greeting" class="text-white text-lg font-bold mt-0.5">Ola, Usuario</h2>
+      </div>
+      <button onclick="handleLogout()" class="btn-logout px-4 py-2 rounded-xl text-sm font-medium flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+        </svg>
+        Sair
+      </button>
+    </div>
+
+    <!-- TASK FORM -->
+    <div class="glass rounded-2xl p-6 mb-5 shadow-lg">
+      <h3 class="text-white font-semibold text-base mb-4 flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-violet-400 inline-block"></span>
+        Nova Tarefa
+      </h3>
+      <form id="form-task" onsubmit="handleAddTask(event)" class="space-y-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="sm:col-span-2">
+            <label class="text-slate-300 text-sm font-medium block mb-1">Titulo da tarefa <span class="text-violet-400">*</span></label>
+            <input id="task-title" type="text" placeholder="O que precisa ser feito?" required
+              class="glass-input w-full rounded-xl px-4 py-3 text-sm" />
+          </div>
+          <div>
+            <label class="text-slate-300 text-sm font-medium block mb-1">Tipo</label>
+            <select id="task-type" class="glass-input w-full rounded-xl px-4 py-3 text-sm cursor-pointer">
+              <option value="Trabalho">Trabalho</option>
+              <option value="Pessoal">Pessoal</option>
+              <option value="Estudos">Estudos</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-slate-300 text-sm font-medium block mb-1">Descricao <span class="text-slate-500 font-normal">(opcional)</span></label>
+            <input id="task-desc" type="text" placeholder="Detalhes adicionais..."
+              class="glass-input w-full rounded-xl px-4 py-3 text-sm" />
+          </div>
+        </div>
+        <button type="submit" id="btn-add-task"
+          class="btn-primary px-6 py-3 rounded-xl text-white text-sm font-semibold flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+          </svg>
+          Adicionar Tarefa
+        </button>
+      </form>
+    </div>
+
+    <!-- TASK LIST -->
+    <div class="glass rounded-2xl p-6 shadow-lg">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-white font-semibold text-base flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 inline-block"></span>
+          Minhas Tarefas
+        </h3>
+        <span id="task-count" class="text-slate-400 text-xs font-medium px-3 py-1 rounded-full glass">0 tarefas</span>
+      </div>
+      <div id="task-list" class="space-y-3"></div>
+    </div>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
